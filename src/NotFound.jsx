@@ -172,7 +172,7 @@ export default function NotFound() {
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center">
               <span className="font-bold text-white text-xs">K</span>
             </div>
-            <span>&copy; {new Date().getFullYear()} KRAVOK. Built by Tyler.</span>
+            <span>&copy; {new Date().getFullYear()} KRAVOK. All rights reserved.</span>
           </div>
         </div>
       </footer>

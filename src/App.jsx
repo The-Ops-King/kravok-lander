@@ -450,7 +450,7 @@ export default function App() {
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center">
               <span className="font-bold text-white text-xs">K</span>
             </div>
-            <span>© {new Date().getFullYear()} KRAVOK. Built by Tyler.</span>
+            <span>© {new Date().getFullYear()} KRAVOK. All rights reserved.</span>
           </div>
           <div className="flex items-center gap-5">
             <a href="#products" className="hover:text-text-primary transition-colors">Products</a>
