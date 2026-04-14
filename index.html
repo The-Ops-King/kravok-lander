@@ -6,6 +6,16 @@
     <title>KRAVOK — AI Sales Coaching, Live</title>
     <meta name="description" content="KRAVOK is the AI copilot that sits on every sales call, coaches in real-time, and grades the close. Download for macOS." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- GitHub Pages SPA redirect handler -->
+    <script>
+      (function(){
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body class="bg-base">
     <div id="root"></div>

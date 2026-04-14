@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import {
-  Download, Mic, Brain, LineChart, GraduationCap, Target, Apple,
-  Sparkles, Zap, ArrowRight, Check, Radio,
+  Download, Mic, Apple,
+  Sparkles, Zap, ArrowRight, Check, Radio, Brain, LineChart,
 } from 'lucide-react';
 
 /* ---------- Animated background ---------- */
@@ -268,10 +269,6 @@ export default function App() {
 
   const products = [
     { icon: Mic, name: 'Oracle', tag: 'LIVE COACH', desc: 'Real-time AI copilot on every call. Tracks the checklist, extracts notes, detects personality, and grades the close.' },
-    { icon: Brain, name: 'Forge', tag: 'AI TRAINER', desc: 'Practice full calls or drill sections with AI prospects that sound real — complete with personalities and objections.' },
-    { icon: LineChart, name: 'Signal', tag: 'ANALYTICS', desc: 'Rep performance tracking, score trends, close rates, and revenue attribution. Powered by CloserMetrix.' },
-    { icon: GraduationCap, name: 'Academy', tag: 'CURRICULUM', desc: 'Video, text, and worksheet curriculum organized by sales stage. Integrated with Forge for learn-then-practice.' },
-    { icon: Target, name: 'Scout', tag: 'HIRING', desc: 'Send candidates a simulated sales call. AI grades performance and coachability before you hire.' },
   ];
 
   return (
@@ -349,15 +346,15 @@ export default function App() {
                 <Zap className="w-3 h-3 text-accent-hover" /> The Suite
               </div>
               <h2 className="text-4xl md:text-6xl font-semibold tracking-tight text-text-primary">
-                Five tools. One mission.
+                One tool. One mission.
               </h2>
               <p className="mt-4 text-text-secondary max-w-xl mx-auto">
-                Everything a sales team needs to train harder, close more, and compound performance.
+                Everything a sales team needs to close more and compound performance.
               </p>
             </div>
           </Reveal>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="max-w-md mx-auto">
             {products.map((p, i) => <ProductCard key={p.name} {...p} i={i} />)}
           </div>
         </div>
@@ -379,9 +376,9 @@ export default function App() {
             <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/40 to-transparent hidden md:block" />
             {[
               { icon: Radio, title: 'Capture', desc: 'Dual-audio capture (mic + system) via ScreenCaptureKit. Zero lag, zero setup.' },
-              { icon: Brain, title: 'Transcribe & Analyze', desc: 'Deepgram Nova-3 streams the conversation. Claude Haiku detects stage, pain, objections in real-time.' },
+              { icon: Brain, title: 'Transcribe & Analyze', desc: 'Real-time transcription streams the conversation. AI detects stage, pain, and objections as they happen.' },
               { icon: Sparkles, title: 'Coach', desc: 'Tips surface the instant the prospect pauses. Structured notes fill themselves in.' },
-              { icon: LineChart, title: 'Grade & Learn', desc: 'Sonnet grades every call on 10 dimensions. Your reps improve with every dial.' },
+              { icon: LineChart, title: 'Grade & Learn', desc: 'AI grades every call on 10 dimensions. Your reps improve with every dial.' },
             ].map((step, i) => (
               <Reveal key={step.title} delay={i * 0.1}>
                 <div className={`flex items-center gap-6 mb-8 ${i % 2 ? 'md:flex-row-reverse md:text-right' : ''}`}>
@@ -427,7 +424,7 @@ export default function App() {
                   Get KRAVOK for macOS
                 </h2>
                 <p className="relative text-text-secondary max-w-lg mx-auto mb-10">
-                  One download. Oracle and Forge included. Free while we&apos;re in MVP.
+                  One download. Oracle included. Free while we&apos;re in MVP.
                   Sign in, start a call, and watch it work.
                 </p>
 
@@ -459,6 +456,8 @@ export default function App() {
             <a href="#products" className="hover:text-text-primary transition-colors">Products</a>
             <a href="#how" className="hover:text-text-primary transition-colors">How it works</a>
             <a href="#download" className="hover:text-text-primary transition-colors">Download</a>
+            <Link to="/terms-of-service" className="hover:text-text-primary transition-colors">Terms of Service</Link>
+            <Link to="/user-agreement" className="hover:text-text-primary transition-colors">User Agreement</Link>
           </div>
         </div>
       </footer>
