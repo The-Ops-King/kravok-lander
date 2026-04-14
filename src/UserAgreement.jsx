@@ -1,9 +1,9 @@
 import React from 'react';
 import LegalPage from './LegalPage';
 
-export default function UserAgreement() {
+export default function UserAgreement({ embedded = false }) {
   return (
-    <LegalPage title="End User Terms of Use">
+    <LegalPage title="End User Terms of Use" embedded={embedded}>
       <p className="legal-subtitle">For Sales Representatives, Closers, and Authorized Users</p>
       <p className="legal-meta">Effective Date: April 14, 2026 | Last Updated: April 14, 2026</p>
 

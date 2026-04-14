@@ -3,24 +3,26 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function LegalPage({ title, children }) {
+export default function LegalPage({ title, children, embedded = false }) {
   return (
     <div className="relative min-h-screen bg-base text-text-body">
       {/* Navbar */}
       <nav className="fixed top-4 left-0 right-0 mx-auto z-50 w-[min(92%,980px)]">
         <div className="glass rounded-2xl px-5 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center shadow-glow">
               <span className="font-bold text-white text-sm">K</span>
             </div>
             <span className="font-semibold tracking-tight text-text-primary">KRAVOK</span>
-          </Link>
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back
-          </Link>
+          </div>
+          {!embedded && (
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -46,10 +48,12 @@ export default function LegalPage({ title, children }) {
             </div>
             <span>&copy; {new Date().getFullYear()} KRAVOK. Built by Tyler.</span>
           </div>
-          <div className="flex items-center gap-5">
-            <Link to="/terms-of-service" className="hover:text-text-primary transition-colors">Terms of Service</Link>
-            <Link to="/user-agreement" className="hover:text-text-primary transition-colors">User Agreement</Link>
-          </div>
+          {!embedded && (
+            <div className="flex items-center gap-5">
+              <Link to="/terms-of-service" className="hover:text-text-primary transition-colors">Terms of Service</Link>
+              <Link to="/user-agreement" className="hover:text-text-primary transition-colors">User Agreement</Link>
+            </div>
+          )}
         </div>
       </footer>
     </div>
