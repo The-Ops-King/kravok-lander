@@ -239,7 +239,7 @@ const Navbar = () => {
       initial={{ y: -60, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, delay: 0.1 }}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(92%,980px)]"
+      className="fixed top-4 left-0 right-0 mx-auto z-50 w-[min(92%,980px)]"
     >
       <div className={`glass rounded-2xl px-5 py-3 flex items-center justify-between transition-all ${scrolled ? 'shadow-elevation-3' : ''}`}>
         <a href="#" className="flex items-center gap-2.5">
