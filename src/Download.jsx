@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom';
 // tag but preserves whatever filename you request, so the app version in
 // the filename has to be kept in sync.
 const DMG_URL =
-  'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.1.1/KRAVOK-0.1.1-arm64.dmg';
-const DMG_FILENAME = 'KRAVOK-0.1.1-arm64.dmg';
-const VERSION_LABEL = 'v0.1.1';
+  'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.1.2/KRAVOK-0.1.2-arm64.dmg';
+const DMG_FILENAME = 'KRAVOK-0.1.2-arm64.dmg';
+const VERSION_LABEL = 'v0.1.2';
 
 /**
  * Download — deep-link target that auto-starts the DMG download.
