@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Download as DownloadIcon, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// Update this constant (and the hero button in App.jsx) whenever a new
-// release ships. GitHub's /releases/latest/... URL rewrites to the newest
-// tag but preserves whatever filename you request, so the app version in
-// the filename has to be kept in sync.
+// The /releases/latest/ URL auto-rewrites to the newest tag, and the DMG
+// asset name is stable (Kravok-mac-arm64.dmg) across releases — so the URL
+// never needs touching. Only VERSION_LABEL below is cosmetic; bump it when a
+// release ships if you want the displayed version to match.
 const DMG_URL =
-  'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.1.3/KRAVOK-0.1.3-arm64.dmg';
-const DMG_FILENAME = 'KRAVOK-0.1.3-arm64.dmg';
-const VERSION_LABEL = 'v0.1.3';
+  'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg';
+const DMG_FILENAME = 'Kravok-mac-arm64.dmg';
+const VERSION_LABEL = 'v0.3.4';
 
 /**
  * Download — deep-link target that auto-starts the DMG download.
@@ -109,7 +109,7 @@ export default function Download() {
         {/* Meta */}
         <div className="mt-6 flex flex-col items-center gap-1 text-xs text-text-muted font-mono">
           <div>{VERSION_LABEL} · {DMG_FILENAME}</div>
-          <div>Apple Silicon · macOS 13+ · ~138 MB</div>
+          <div>Apple Silicon · macOS 13+ · ~6 MB</div>
         </div>
 
         {/* Install steps */}

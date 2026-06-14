@@ -429,12 +429,12 @@ export default function App() {
                 </p>
 
                 <div className="relative flex flex-col items-center gap-4">
-                  <MagneticButton href="https://github.com/The-Ops-King/kravok-lander/releases/download/v0.1.3/KRAVOK-0.1.3-arm64.dmg" primary>
+                  <MagneticButton href="https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg" primary>
                     <Download className="w-5 h-5" />
                     Download KRAVOK.dmg
                   </MagneticButton>
                   <div className="text-xs text-text-muted font-mono">
-                    Apple Silicon · macOS 13+ · 138 MB
+                    Apple Silicon · macOS 13+ · ~6 MB
                   </div>
                 </div>
               </div>
