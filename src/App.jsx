@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Download, Mic, Apple,
+  Download, Mic, Apple, Monitor,
   Sparkles, Zap, ArrowRight, Check, Radio, Brain, LineChart,
 } from 'lucide-react';
+import { useOS, DOWNLOADS, otherOS } from './platform';
 
 /* ---------- Animated background ---------- */
 const AuroraBackground = () => (
@@ -266,6 +267,7 @@ const Navbar = () => {
 export default function App() {
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -80]);
+  const os = useOS();
 
   const products = [
     { icon: Mic, name: 'Oracle', tag: 'LIVE COACH', desc: 'Real-time AI copilot on every call. Tracks the checklist, extracts notes, detects personality, and grades the close.' },
@@ -308,9 +310,16 @@ export default function App() {
 
           <Reveal delay={0.35}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <MagneticButton href="#download" primary>
-                <Apple className="w-4 h-4" /> Download for macOS
-              </MagneticButton>
+              {os === 'other' ? (
+                <MagneticButton href="#download" primary>
+                  <Download className="w-4 h-4" /> Download
+                </MagneticButton>
+              ) : (
+                <MagneticButton href={DOWNLOADS[os].url} primary>
+                  {os === 'mac' ? <Apple className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+                  {DOWNLOADS[os].label}
+                </MagneticButton>
+              )}
               <MagneticButton href="#products">
                 See what&apos;s inside <ArrowRight className="w-4 h-4" />
               </MagneticButton>
@@ -318,9 +327,9 @@ export default function App() {
           </Reveal>
 
           <Reveal delay={0.5}>
-            <div className="mt-6 flex items-center justify-center gap-6 text-xs text-text-muted">
-              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> Universal (Intel + Apple Silicon)</div>
-              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> macOS 13+</div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-text-muted">
+              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> {os === 'windows' ? 'Windows 10+ · x64' : os === 'mac' ? 'Apple Silicon · macOS 13+' : 'macOS & Windows'}</div>
+              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> {os === 'windows' ? 'Guided installer' : 'Signed & notarized'}</div>
               <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> Free while in MVP</div>
             </div>
           </Reveal>
@@ -417,11 +426,13 @@ export default function App() {
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                   className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl glass-accent mb-6"
                 >
-                  <Apple className="w-7 h-7 text-text-primary" />
+                  {os === 'windows'
+                    ? <Monitor className="w-7 h-7 text-text-primary" />
+                    : <Apple className="w-7 h-7 text-text-primary" />}
                 </motion.div>
 
                 <h2 className="relative text-4xl md:text-6xl font-semibold tracking-tight text-text-primary mb-4">
-                  Get KRAVOK for macOS
+                  {os === 'mac' ? 'Get KRAVOK for macOS' : os === 'windows' ? 'Get KRAVOK for Windows' : 'Get KRAVOK'}
                 </h2>
                 <p className="relative text-text-secondary max-w-lg mx-auto mb-10">
                   One download. Oracle included. Free while we&apos;re in MVP.
@@ -429,12 +440,33 @@ export default function App() {
                 </p>
 
                 <div className="relative flex flex-col items-center gap-4">
-                  <MagneticButton href="https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg" primary>
-                    <Download className="w-5 h-5" />
-                    Download KRAVOK.dmg
-                  </MagneticButton>
+                  {os === 'other' ? (
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                      <MagneticButton href={DOWNLOADS.mac.url} primary>
+                        <Apple className="w-5 h-5" /> macOS
+                      </MagneticButton>
+                      <MagneticButton href={DOWNLOADS.windows.url} primary>
+                        <Monitor className="w-5 h-5" /> Windows
+                      </MagneticButton>
+                    </div>
+                  ) : (
+                    <>
+                      <MagneticButton href={DOWNLOADS[os].url} primary>
+                        <Download className="w-5 h-5" />
+                        {DOWNLOADS[os].label}
+                      </MagneticButton>
+                      <a
+                        href={DOWNLOADS[otherOS(os)].url}
+                        className="text-xs text-text-secondary hover:text-text-primary transition-colors underline underline-offset-4 decoration-white/20"
+                      >
+                        On {DOWNLOADS[otherOS(os)].name}? Get the {DOWNLOADS[otherOS(os)].name} version
+                      </a>
+                    </>
+                  )}
                   <div className="text-xs text-text-muted font-mono">
-                    Apple Silicon · macOS 13+ · ~6 MB
+                    {os === 'other'
+                      ? 'macOS · Apple Silicon   ·   Windows · x64'
+                      : `${DOWNLOADS[os].meta} · ${DOWNLOADS[os].size}`}
                   </div>
                 </div>
               </div>
