@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 const DMG_URL =
   'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg';
 const DMG_FILENAME = 'Kravok-mac-arm64.dmg';
-const VERSION_LABEL = 'v0.4.7';
+const VERSION_LABEL = 'v0.4.9';
 
 /**
  * Download — deep-link target that auto-starts the DMG download.
