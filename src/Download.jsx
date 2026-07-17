@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Download as DownloadIcon, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePlatformDownload } from './downloads';
 
-// The /releases/latest/ URL auto-rewrites to the newest tag, and the DMG
-// asset name is stable (Kravok-mac-arm64.dmg) across releases — so the URL
-// never needs touching. Only VERSION_LABEL below is cosmetic; bump it when a
-// release ships if you want the displayed version to match.
-const DMG_URL =
-  'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg';
-const DMG_FILENAME = 'Kravok-mac-arm64.dmg';
+// The /releases/latest/ URL auto-rewrites to the newest tag, and asset names
+// are stable across releases — so the URLs never need touching. Only
+// VERSION_LABEL below is cosmetic; bump it when a release ships if you want the
+// displayed version to match.
 const VERSION_LABEL = 'v0.4.14';
 
 /**
@@ -25,15 +23,16 @@ const VERSION_LABEL = 'v0.4.14';
  */
 export default function Download() {
   const [started, setStarted] = useState(false);
+  const { primary } = usePlatformDownload();
 
   useEffect(() => {
-    // Give the page a beat to paint, then kick the download.
+    // Give the page a beat to paint, then kick the download for the visitor's OS.
     const t = setTimeout(() => {
-      window.location.href = DMG_URL;
+      window.location.href = primary.url;
       setStarted(true);
     }, 400);
     return () => clearTimeout(t);
-  }, []);
+  }, [primary.url]);
 
   return (
     <div className="relative min-h-screen bg-base text-text-body overflow-hidden">
@@ -95,21 +94,21 @@ export default function Download() {
 
         {/* Manual trigger */}
         <a
-          href={DMG_URL}
+          href={primary.url}
           className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-medium text-sm tracking-wide text-white overflow-hidden"
         >
           <span className="absolute inset-0 bg-gradient-to-r from-accent via-accent-hover to-accent bg-[length:200%_100%] animate-gradient-shift" />
           <span className="absolute inset-0 rounded-xl opacity-60 blur-md bg-accent/50 group-hover:opacity-80 transition-opacity" />
           <span className="relative flex items-center gap-2.5">
             <DownloadIcon className="w-5 h-5" />
-            Download KRAVOK.dmg
+            {primary.label}
           </span>
         </a>
 
         {/* Meta */}
         <div className="mt-6 flex flex-col items-center gap-1 text-xs text-text-muted font-mono">
-          <div>{VERSION_LABEL} · {DMG_FILENAME}</div>
-          <div>Apple Silicon · macOS 13+ · ~6 MB</div>
+          <div>{VERSION_LABEL} · {primary.filename}</div>
+          <div>{primary.note}</div>
         </div>
 
         {/* Install steps */}
@@ -120,7 +119,7 @@ export default function Download() {
           <ol className="space-y-3 text-sm text-text-body">
             <li className="flex gap-3">
               <span className="shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-text-secondary">1</span>
-              <span>Open <span className="font-mono text-text-primary">{DMG_FILENAME}</span> from your Downloads folder.</span>
+              <span>Open <span className="font-mono text-text-primary">{primary.filename}</span> from your Downloads folder.</span>
             </li>
             <li className="flex gap-3">
               <span className="shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-text-secondary">2</span>

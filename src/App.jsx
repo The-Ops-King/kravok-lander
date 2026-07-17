@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Download, Mic, Apple,
+  Download, Mic, Apple, Monitor,
   Sparkles, Zap, ArrowRight, Check, Radio, Brain, LineChart,
 } from 'lucide-react';
+import { usePlatformDownload } from './downloads';
 
 /* ---------- Animated background ---------- */
 const AuroraBackground = () => (
@@ -266,6 +267,7 @@ const Navbar = () => {
 export default function App() {
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -80]);
+  const { primary, secondary, os } = usePlatformDownload();
 
   const products = [
     { icon: Mic, name: 'Oracle', tag: 'LIVE COACH', desc: 'Real-time AI copilot on every call. Tracks the checklist, extracts notes, detects personality, and grades the close.' },
@@ -309,7 +311,7 @@ export default function App() {
           <Reveal delay={0.35}>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <MagneticButton href="#download" primary>
-                <Apple className="w-4 h-4" /> Download for macOS
+                {os === 'windows' ? <Monitor className="w-4 h-4" /> : <Apple className="w-4 h-4" />} {primary.label}
               </MagneticButton>
               <MagneticButton href="#products">
                 See what&apos;s inside <ArrowRight className="w-4 h-4" />
@@ -421,7 +423,7 @@ export default function App() {
                 </motion.div>
 
                 <h2 className="relative text-4xl md:text-6xl font-semibold tracking-tight text-text-primary mb-4">
-                  Get KRAVOK for macOS
+                  Get KRAVOK for {os === 'windows' ? 'Windows' : 'macOS'}
                 </h2>
                 <p className="relative text-text-secondary max-w-lg mx-auto mb-10">
                   One download. Oracle included. Free while we&apos;re in MVP.
@@ -429,13 +431,14 @@ export default function App() {
                 </p>
 
                 <div className="relative flex flex-col items-center gap-4">
-                  <MagneticButton href="https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-arm64.dmg" primary>
+                  <MagneticButton href={primary.url} primary>
                     <Download className="w-5 h-5" />
-                    Download KRAVOK.dmg
+                    {primary.label}
                   </MagneticButton>
                   <div className="text-xs text-text-muted font-mono">
-                    Apple Silicon · macOS 13+ · ~6 MB
+                    {primary.note}
                   </div>
+                  <a href={secondary.url} className="text-xs text-text-muted hover:text-text-primary transition-colors underline underline-offset-4">Or download for {secondary.os === 'windows' ? 'Windows' : 'macOS'}</a>
                 </div>
               </div>
             </div>
