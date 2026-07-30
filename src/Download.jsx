@@ -8,7 +8,7 @@ import { usePlatformDownload } from './downloads';
 // are stable across releases — so the URLs never need touching. Only
 // VERSION_LABEL below is cosmetic; bump it when a release ships if you want the
 // displayed version to match.
-const VERSION_LABEL = 'v0.5.4';
+const VERSION_LABEL = 'v0.5.5';
 
 /**
  * Download — deep-link target that auto-starts the DMG download.
