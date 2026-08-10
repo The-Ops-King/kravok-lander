@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import LegalPage from './LegalPage';
 
 export default function UserAgreement({ embedded = false }) {
   return (
     <LegalPage title="End User Terms of Use" embedded={embedded}>
       <p className="legal-subtitle">For Sales Representatives, Closers, and Authorized Users</p>
-      <p className="legal-meta">Effective Date: April 14, 2026 | Last Updated: April 14, 2026</p>
+      <p className="legal-meta">Effective Date: August 10, 2026 | Last Updated: August 10, 2026</p>
 
       <hr />
 
@@ -48,7 +49,7 @@ export default function UserAgreement({ embedded = false }) {
       <h2>5. DATA COLLECTION AND USAGE</h2>
       <p><strong>5.1 What We Collect.</strong> Through your use of the App, Kravok collects and generates the following types of data:</p>
       <ul>
-        <li>Call transcripts (retained for a limited period, currently not exceeding 30 days)</li>
+        <li>Call transcripts</li>
         <li>Structured call notes (pains, goals, objections, commitments, follow-up items, personal anecdotes, and other categories)</li>
         <li>Performance scores and scorecards</li>
         <li>Personality and behavioral assessments</li>
@@ -103,7 +104,7 @@ export default function UserAgreement({ embedded = false }) {
       <p><strong>13.3 Effect of Termination.</strong> Upon termination, your right to use the App ceases immediately. You must uninstall the App from all devices. Your historical performance data remains with your Organization and with Kravok as described in Section 4.4. Provisions regarding data ownership, intellectual property, indemnification, limitation of liability, and any other provisions that by their nature should survive, will survive termination.</p>
 
       <h2>14. PRIVACY</h2>
-      <p>Your use of the App is governed by the Kravok Privacy Policy. Please review the Privacy Policy for detailed information about how we collect, use, and protect your data. If you are located outside the United States, you acknowledge that your data may be transferred to and processed in the United States and other jurisdictions.</p>
+      <p>Your use of the App is governed by the <Link to="/privacy-policy">Kravok Platform Privacy Policy</Link>. Please review it for information about how the Platform collects, uses, discloses, retains, and protects data. If you are located outside the United States, you acknowledge that data may be transferred to and processed in the United States and other jurisdictions where service providers operate.</p>
 
       <h2>15. DISPUTE RESOLUTION</h2>
       <p><strong>15.1 Governing Law.</strong> These Terms shall be governed by the laws of the State of Florida without regard to conflict of laws principles.</p>

@@ -1,17 +1,14 @@
-// Central download config + OS detection. The GitHub /releases/latest/download
-// URLs are stable and asset names are fixed across releases, so these never
-// need touching. The /download page's VERSION_LABEL is bumped separately by CI.
-import { useEffect, useState } from 'react';
-
-const BASE = 'https://github.com/The-Ops-King/kravok-lander/releases/latest/download';
+// The public download and its release evidence intentionally move together.
+export const RELEASE_TAG = 'v0.6.4';
+const BASE = `https://github.com/The-Ops-King/kravok-lander/releases/download/${RELEASE_TAG}`;
 
 export const DOWNLOADS = {
   mac: {
     os: 'mac',
     url: `${BASE}/Kravok-mac-universal.dmg`,
-    filename: 'Kravok-mac-universal.dmg',
+    filename: 'KRAVOK macOS installer (.dmg)',
     label: 'Download for macOS',
-    note: 'Universal (Apple Silicon + Intel) · macOS 13+',
+    note: 'macOS 13+',
   },
   windows: {
     os: 'windows',
@@ -22,29 +19,61 @@ export const DOWNLOADS = {
   },
 };
 
-// Best-effort OS sniff. userAgentData.platform is the modern signal; fall back
-// to legacy navigator.platform / userAgent. Defaults to mac (primary audience).
-export function detectOS() {
-  if (typeof navigator === 'undefined') return 'mac';
-  const p = (
-    navigator.userAgentData?.platform ||
-    navigator.platform ||
-    navigator.userAgent ||
-    ''
-  ).toLowerCase();
-  if (p.includes('win')) return 'windows';
-  if (p.includes('mac') || p.includes('iphone') || p.includes('ipad')) return 'mac';
-  return 'mac';
+const INSTALL_GUIDES = {
+  mac: {
+    heading: 'Install on macOS',
+    steps: [
+      'Open the KRAVOK .dmg file from your Downloads folder.',
+      'Drag KRAVOK into the Applications folder.',
+      'Launch KRAVOK from Applications and sign in with your invited email.',
+    ],
+    trust: null,
+  },
+  windows: {
+    heading: 'Install on Windows',
+    steps: [
+      'Open Kravok-windows-x64-setup.exe from your Downloads folder.',
+      'Follow the Windows installer to complete setup.',
+      'Launch KRAVOK from the Start menu and sign in with your invited email.',
+    ],
+    trust: 'For invited users on 64-bit Windows 10 or Windows 11.',
+  },
+};
+
+export function isSupportedOS(os) {
+  return os === 'mac' || os === 'windows';
 }
 
-// Returns the visitor's platform download + the other one (for a secondary
-// link). Defaults to mac on first render, corrects after mount — no SSR here.
-export function usePlatformDownload() {
-  const [os, setOs] = useState('mac');
-  useEffect(() => { setOs(detectOS()); }, []);
-  return {
-    os,
-    primary: DOWNLOADS[os],
-    secondary: DOWNLOADS[os === 'mac' ? 'windows' : 'mac'],
-  };
+export function getInitialSelection(detectedOS) {
+  return isSupportedOS(detectedOS) ? detectedOS : null;
+}
+
+export function getDownloadOptions(preferredOS) {
+  if (preferredOS === 'windows') return [DOWNLOADS.windows, DOWNLOADS.mac];
+  return [DOWNLOADS.mac, DOWNLOADS.windows];
+}
+
+export function getInstallGuide(os) {
+  return INSTALL_GUIDES[os] || null;
+}
+
+// Only desktop macOS and Windows are supported. Mobile, Linux, server
+// rendering, and unknown clients remain unsupported until the visitor
+// explicitly chooses a computer download.
+export function detectOS(client = typeof navigator === 'undefined' ? undefined : navigator) {
+  if (!client) return 'unsupported';
+
+  const platform = [
+    client.userAgentData?.platform,
+    client.platform,
+    client.userAgent,
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  const isMobileApple = /iphone|ipad|ipod/.test(platform) ||
+    (platform.includes('mac') && Number(client.maxTouchPoints) > 1);
+
+  if (isMobileApple) return 'unsupported';
+  if (platform.includes('win')) return 'windows';
+  if (platform.includes('mac')) return 'mac';
+  return 'unsupported';
 }

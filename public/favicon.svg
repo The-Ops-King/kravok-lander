@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#080808"/><path d="M9 7h4v8.2L19.6 7H24l-7 9 7.4 9H19.6L13 16.8V25H9z" fill="#CC1111"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0A0A0A"/>
+  <image href="/brand/kravok-wordmark-dark.png" x="-6.4" y="-13.3" width="92.2" height="61.5" preserveAspectRatio="none"/>
+</svg>
