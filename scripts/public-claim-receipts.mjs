@@ -39,8 +39,8 @@ export const LEGAL_DOCUMENTS_REVIEW_RECEIPT = {
   approvalBasis: 'owner',
   acknowledgement: 'not-counsel-reviewed',
   documentSha256: {
-    'TermsOfService.jsx': 'c09508992b03d8e5d211f12f64769f9b8e0eeb577ef348aabde2f6e5ed93c3c8',
-    'UserAgreement.jsx': '2f09b4b1b55f36d2595e76454c1805c53936e94dfe11bad44fce1a5f3c1679a9',
-    'EndUserAgreement.jsx': '54e1f373bdda7e440802ed4efb850964fc48ae5da90242c488d75a99047ce524',
+    'TermsOfService.jsx': '4d207905ff3296f85b8e7800f095c3dba437e7bf05eb6c5bfbfa92ec5d025621',
+    'UserAgreement.jsx': '66a9b1bef1ba3220ed3a80558cbf8aa742cff8796da869dd837e097689073e50',
+    'EndUserAgreement.jsx': 'b725a35ae2fe5033a90c940b190a8436c8580acfc52f748a269e7ea36c81da1b',
   },
 };

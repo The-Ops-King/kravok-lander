@@ -13,6 +13,7 @@ import {
   getManifestSha256,
   hasPlatformPrivacyRoute,
   hasPrivacyPolicyLink,
+  sourceSha256,
   validateLegalBundleReceipt,
   validateMacArtifactReceipt,
   validatePlatformPrivacyReceipt,
@@ -95,7 +96,6 @@ const userAgreementSource = sourceAt('../src/UserAgreement.jsx');
 const endUserAgreementSource = sourceAt('../src/EndUserAgreement.jsx');
 const privacyPolicyUrl = new URL('../src/PrivacyPolicy.jsx', import.meta.url);
 const privacyPolicyExists = existsSync(privacyPolicyUrl);
-const sha256 = (content) => createHash('sha256').update(content).digest('hex');
 
 blockers.push(...validatePlatformPrivacyReceipt(
   PLATFORM_PRIVACY_POLICY_RECEIPT,
@@ -105,7 +105,7 @@ blockers.push(...validatePlatformPrivacyReceipt(
     policyFileExists: privacyPolicyExists,
     linkedFromPublicFooter: hasPrivacyPolicyLink(appSource) && hasPrivacyPolicyLink(legalPageSource),
     linkedFromLegalAgreements: hasPrivacyPolicyLink(termsSource) && hasPrivacyPolicyLink(userAgreementSource),
-    documentSha256: privacyPolicyExists ? sha256(readFileSync(privacyPolicyUrl, 'utf8')) : null,
+    documentSha256: privacyPolicyExists ? sourceSha256(readFileSync(privacyPolicyUrl, 'utf8')) : null,
   },
 ));
 
@@ -113,9 +113,9 @@ blockers.push(...validateLegalBundleReceipt(
   LEGAL_DOCUMENTS_REVIEW_RECEIPT,
   buildDate,
   {
-    'TermsOfService.jsx': sha256(termsSource),
-    'UserAgreement.jsx': sha256(userAgreementSource),
-    'EndUserAgreement.jsx': sha256(endUserAgreementSource),
+    'TermsOfService.jsx': sourceSha256(termsSource),
+    'UserAgreement.jsx': sourceSha256(userAgreementSource),
+    'EndUserAgreement.jsx': sourceSha256(endUserAgreementSource),
   },
 ));
 
