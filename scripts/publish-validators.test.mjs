@@ -6,10 +6,16 @@ import {
   hasPlatformPrivacyRoute,
   hasPrivacyPolicyLink,
   isImmutableReceiptSource,
+  sourceSha256,
   validateLegalBundleReceipt,
   validateMacArtifactReceipt,
   validatePlatformPrivacyReceipt,
 } from './publish-validators.mjs';
+
+test('source digests are stable across Windows and Unix line endings', () => {
+  assert.equal(sourceSha256('first\r\nsecond\r\n'), sourceSha256('first\nsecond\n'));
+  assert.equal(sourceSha256('first\rsecond\r'), sourceSha256('first\nsecond\n'));
+});
 
 test('immutable receipt sources reject arbitrary text', () => {
   assert.equal(isImmutableReceiptSource('approved by somebody'), false);

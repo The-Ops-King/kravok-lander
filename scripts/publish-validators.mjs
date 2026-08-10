@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 const PINNED_GITHUB_RELEASE = /^https:\/\/github\.com\/The-Ops-King\/(?:KRAVOK|kravok-lander)\/releases\/download\/(?!latest(?:\/|$))[^/?#]+\/[^/?#]+$/i;
 const PINNED_GITHUB_MANIFEST = /^https:\/\/raw\.githubusercontent\.com\/The-Ops-King\/(?:KRAVOK|kravok-lander)\/[a-f0-9]{40}\/[^?#]+$/i;
 const SHA256 = /^[a-f0-9]{64}$/i;
@@ -9,6 +11,12 @@ const IMMUTABLE_RECEIPT_URLS = [
 
 export function isImmutableReceiptSource(source) {
   return typeof source === 'string' && IMMUTABLE_RECEIPT_URLS.some((pattern) => pattern.test(source));
+}
+
+export function sourceSha256(source) {
+  if (typeof source !== 'string') return null;
+  const canonicalSource = source.replace(/\r\n?/g, '\n');
+  return createHash('sha256').update(canonicalSource).digest('hex');
 }
 
 function withoutSourceComments(source) {
