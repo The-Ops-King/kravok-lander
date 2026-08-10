@@ -3,23 +3,28 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "test": "node --test",
+    "verify:claims": "node scripts/verify-public-claims.mjs",
+    "build": "npm run verify:claims && vite build",
+    "build:local": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "framer-motion": "^11.3.0",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.14.1"
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.5",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
-    "vite": "^5.4.10"
+    "vite": "^8.2.1"
   }
 }

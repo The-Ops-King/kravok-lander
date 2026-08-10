@@ -1,469 +1,360 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
+import { ArrowRight, ChevronDown, Download, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import {
-  Download, Mic, Apple, Monitor,
-  Sparkles, Zap, ArrowRight, Check, Radio, Brain, LineChart,
-} from 'lucide-react';
-import { usePlatformDownload } from './downloads';
+import OracleDemo from './components/OracleDemo.jsx';
+import ForgeDemo from './components/ForgeDemo.jsx';
+import HindsightDemo from './components/HindsightDemo.jsx';
+import ManagerDemo from './components/ManagerDemo.jsx';
+import { KravokLockup, OracleLockup } from './components/BrandIdentity.jsx';
+import ProductIcon from './components/ProductIcon.jsx';
+import { PUBLIC_PROOFS } from './experience.js';
+import RequestAccess from './RequestAccess.jsx';
+import { usePageMetadata } from './usePageMetadata.js';
 
-/* ---------- Animated background ---------- */
-const AuroraBackground = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    <div className="absolute inset-0 grid-bg" />
-    <motion.div
-      className="absolute -top-40 -left-40 w-[560px] h-[560px] rounded-full blur-[120px]"
-      style={{ background: 'radial-gradient(circle, rgba(204,17,17,0.35), transparent 60%)' }}
-      animate={{ x: [0, 80, -40, 0], y: [0, 60, 120, 0] }}
-      transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.div
-      className="absolute top-1/3 -right-40 w-[640px] h-[640px] rounded-full blur-[140px]"
-      style={{ background: 'radial-gradient(circle, rgba(153,0,0,0.28), transparent 60%)' }}
-      animate={{ x: [0, -60, 40, 0], y: [0, -50, 40, 0] }}
-      transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <motion.div
-      className="absolute bottom-0 left-1/3 w-[520px] h-[520px] rounded-full blur-[130px]"
-      style={{ background: 'radial-gradient(circle, rgba(68,136,204,0.16), transparent 60%)' }}
-      animate={{ x: [0, 50, -60, 0], y: [0, 40, -20, 0] }}
-      transition={{ duration: 24, repeat: Infinity, ease: 'easeInOut' }}
-    />
-    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-base" />
-  </div>
-);
+const PRODUCTS = [
+  {
+    id: 'oracle',
+    name: 'Oracle',
+    role: 'Live call guidance',
+    description: 'Shows the right help when it matters—and stays quiet when it does not.',
+    Demo: OracleDemo,
+  },
+  {
+    id: 'forge',
+    name: 'Forge',
+    role: 'Practice calls',
+    description: 'Lets reps practice difficult conversations before the real call.',
+    Demo: ForgeDemo,
+  },
+  {
+    id: 'hindsight',
+    name: 'Hindsight',
+    role: 'Call review',
+    description: 'Shows what worked, what changed the call, and what to do next.',
+    Demo: HindsightDemo,
+  },
+  {
+    id: 'manager',
+    name: 'Manager',
+    role: 'Team overview',
+    description: 'Gives leaders one place to review calls and improve the team’s guidance.',
+    Demo: ManagerDemo,
+  },
+];
 
-/* ---------- Floating particles ---------- */
-const Particles = ({ count = 24 }) => {
-  const particles = Array.from({ length: count });
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {particles.map((_, i) => {
-        const size = Math.random() * 3 + 1;
-        return (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-accent-hover/60"
-            style={{
-              width: size, height: size,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              boxShadow: '0 0 8px rgba(204,17,17,0.8)',
-            }}
-            animate={{
-              y: [0, -40 - Math.random() * 60, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 6 + Math.random() * 6,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: 'easeInOut',
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
-/* ---------- Magnetic button (Magic UI / Aceternity style) ---------- */
-const MagneticButton = ({ children, href, primary = false, ...rest }) => {
-  const ref = useRef(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 300, damping: 20 });
-  const sy = useSpring(y, { stiffness: 300, damping: 20 });
-
-  const handle = (e) => {
-    const r = ref.current.getBoundingClientRect();
-    x.set((e.clientX - r.left - r.width / 2) * 0.25);
-    y.set((e.clientY - r.top - r.height / 2) * 0.25);
-  };
-  const reset = () => { x.set(0); y.set(0); };
-
-  const base = 'group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-medium text-sm tracking-wide overflow-hidden transition-colors';
-  const styles = primary
-    ? 'text-white'
-    : 'text-text-body glass hover:border-white/20';
-
-  return (
-    <motion.a
-      ref={ref}
-      href={href}
-      onMouseMove={handle}
-      onMouseLeave={reset}
-      style={{ x: sx, y: sy }}
-      className={`${base} ${styles}`}
-      {...rest}
-    >
-      {primary && (
-        <>
-          <span className="absolute inset-0 bg-gradient-to-r from-accent via-accent-hover to-accent bg-[length:200%_100%] animate-gradient-shift" />
-          <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-accent-hover to-accent blur-xl" />
-          <span className="absolute inset-px rounded-[11px] bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-        </>
-      )}
-      <span className="relative flex items-center gap-2.5">{children}</span>
-    </motion.a>
-  );
-};
-
-/* ---------- Section reveal wrapper ---------- */
-const Reveal = ({ children, delay = 0, className = '' }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-80px' }}
-    transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
-    className={className}
-  >
-    {children}
-  </motion.div>
-);
-
-/* ---------- Live call mock card ---------- */
-const LiveCallMock = () => {
-  const [tick, setTick] = useState(0);
+function useScrollReveal() {
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 2400);
-    return () => clearInterval(id);
+    const root = document.documentElement;
+    const nodes = [...document.querySelectorAll('[data-reveal]')];
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    root.classList.add('reveal-ready');
+
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      nodes.forEach((node) => node.classList.add('is-visible'));
+      return () => root.classList.remove('reveal-ready');
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    nodes.forEach((node) => observer.observe(node));
+    return () => {
+      observer.disconnect();
+      root.classList.remove('reveal-ready');
+    };
   }, []);
-  const tips = [
-    { label: 'GOAL DETECTED', text: 'Prospect mentioned hitting $2M ARR this year. Mirror it.' },
-    { label: 'OBJECTION', text: '"Too expensive" — reframe around cost of inaction.' },
-    { label: 'PAIN', text: 'Churn is killing them. Pivot to retention story.' },
-    { label: 'CLOSE WINDOW', text: 'They asked about pricing twice. Ask for the meeting.' },
-  ];
-  const current = tips[tick % tips.length];
+}
+
+function Header() {
+  return (
+    <header className="site-header">
+      <a className="brand" href="#top" aria-label="KRAVOK home">
+        <KravokLockup />
+      </a>
+
+      <nav aria-label="Primary navigation" className="primary-nav">
+        <a href="#system">How it works</a>
+        <a href="#proof">Trust</a>
+        <a href="#request-access">Access</a>
+      </nav>
+
+      <Link className="invited-link" to="/download">
+        <Download aria-hidden="true" />
+        <span>Already have an invite code?</span>
+      </Link>
+    </header>
+  );
+}
+
+function SystemDemo() {
+  const [activeProduct, setActiveProduct] = useState(PRODUCTS[0].id);
+  const tabRefs = useRef([]);
+  const selectedIndex = PRODUCTS.findIndex(({ id }) => id === activeProduct);
+  const selected = PRODUCTS[selectedIndex];
+  const ActiveDemo = selected.Demo;
+
+  function selectAt(index) {
+    const normalizedIndex = (index + PRODUCTS.length) % PRODUCTS.length;
+    setActiveProduct(PRODUCTS[normalizedIndex].id);
+    tabRefs.current[normalizedIndex]?.focus();
+  }
+
+  function handleTabKeyDown(event, index) {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      event.preventDefault();
+      selectAt(index + 1);
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      selectAt(index - 1);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      selectAt(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      selectAt(PRODUCTS.length - 1);
+    }
+  }
 
   return (
-    <div className="relative">
-      <div className="absolute -inset-6 bg-gradient-to-br from-accent/20 via-accent-subtle/10 to-transparent blur-3xl" />
-      <motion.div
-        initial={{ opacity: 0, y: 40, rotateX: 10 }}
-        whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        className="relative glass rounded-2xl p-5 w-full max-w-md"
-        style={{ transformPerspective: 1000 }}
-      >
-        {/* header */}
-        <div className="flex items-center justify-between pb-4 border-b border-white/5">
-          <div className="flex items-center gap-2.5">
-            <div className="relative">
-              <div className="w-2.5 h-2.5 rounded-full bg-accent-hover" />
-              <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-accent-hover animate-ping" />
-            </div>
-            <span className="text-xs tracking-[0.2em] text-text-secondary font-mono">ORACLE · LIVE</span>
-          </div>
-          <span className="text-xs font-mono text-text-muted">00:14:23</span>
+    <section id="system" aria-labelledby="system-title" className="system-section" data-reveal>
+      <div className="section-heading">
+        <p className="eyebrow">One connected system</p>
+        <h2 id="system-title">Before. During. After.</h2>
+        <p>
+          Practice with Forge. Get live guidance from Oracle. Review calls in Hindsight.
+          Give managers a clear view of what needs attention.
+        </p>
+      </div>
+
+      <div className="system-shell">
+        <div className="product-tabs" role="tablist" aria-label="KRAVOK products">
+          {PRODUCTS.map((product, index) => {
+            const isSelected = product.id === activeProduct;
+            return (
+              <button
+                key={product.id}
+                ref={(node) => { tabRefs.current[index] = node; }}
+                id={`product-tab-${product.id}`}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                aria-controls="product-panel"
+                tabIndex={isSelected ? 0 : -1}
+                onClick={() => setActiveProduct(product.id)}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
+                className="product-tab"
+              >
+                <ProductIcon product={product.id} />
+                <span className="product-tab-copy">
+                  <strong>{product.name}</strong>
+                  <span>{product.role}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* waveform */}
-        <div className="flex items-end gap-1 h-16 mt-5 mb-5">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="flex-1 bg-gradient-to-t from-accent to-accent-hover rounded-sm"
-              animate={{ height: [`${15 + Math.random() * 20}%`, `${40 + Math.random() * 60}%`, `${20 + Math.random() * 30}%`] }}
-              transition={{ duration: 0.8 + Math.random() * 0.6, repeat: Infinity, repeatType: 'reverse', delay: i * 0.03 }}
-            />
-          ))}
-        </div>
-
-        {/* tip bubble */}
-        <motion.div
-          key={tick}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="glass-accent rounded-xl p-4"
+        <div
+          id="product-panel"
+          role="tabpanel"
+          aria-labelledby={`product-tab-${selected.id}`}
+          aria-live="polite"
+          aria-atomic="false"
+          tabIndex={0}
+          className="product-panel"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-accent-hover" />
-            <span className="text-[10px] font-mono tracking-[0.2em] text-accent-hover">{current.label}</span>
-          </div>
-          <p className="text-sm text-text-body leading-snug">{current.text}</p>
-        </motion.div>
-
-        {/* checklist */}
-        <div className="mt-4 space-y-1.5">
-          {['Discovery', 'Pain qualified', 'Decision maker', 'Close'].map((s, i) => (
-            <div key={s} className="flex items-center gap-2 text-xs text-text-secondary">
-              <div className={`w-3.5 h-3.5 rounded flex items-center justify-center ${i < (tick % 4) + 1 ? 'bg-success/20 border border-success/40' : 'border border-white/10'}`}>
-                {i < (tick % 4) + 1 && <Check className="w-2.5 h-2.5 text-success" />}
-              </div>
-              <span className={i < (tick % 4) + 1 ? 'text-text-body' : ''}>{s}</span>
+          <header className="product-panel-header">
+            <div>
+              {selected.id === 'oracle' && (
+                <OracleLockup className="oracle-lockup--panel" />
+              )}
+              <p className="panel-kicker">{selected.name} / {selected.role}</p>
+              <p>{selected.description}</p>
             </div>
-          ))}
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-
-/* ---------- Product card ---------- */
-const ProductCard = ({ icon: Icon, name, tag, desc, i }) => (
-  <Reveal delay={i * 0.08}>
-    <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      className="group relative glass rounded-2xl p-6 h-full overflow-hidden"
-    >
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-accent/10 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-accent/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-      <div className="relative flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-xl glass-accent flex items-center justify-center">
-          <Icon className="w-5 h-5 text-accent-hover" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-text-primary tracking-tight">{name}</h3>
-          <span className="text-[10px] font-mono tracking-[0.15em] text-text-muted">{tag}</span>
+            <span className="demo-disclosure">Interactive preview</span>
+          </header>
+          <div key={selected.id} className="product-demo-transition">
+            <ActiveDemo />
+          </div>
         </div>
       </div>
-      <p className="relative text-sm text-text-secondary leading-relaxed">{desc}</p>
-    </motion.div>
-  </Reveal>
-);
-
-/* ---------- Navbar ---------- */
-const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', fn);
-    return () => window.removeEventListener('scroll', fn);
-  }, []);
-  return (
-    <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, delay: 0.1 }}
-      className="fixed top-4 left-0 right-0 mx-auto z-50 w-[min(92%,980px)]"
-    >
-      <div className={`glass rounded-2xl px-5 py-3 flex items-center justify-between transition-all ${scrolled ? 'shadow-elevation-3' : ''}`}>
-        <a href="#" className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center shadow-glow">
-            <span className="font-bold text-white text-sm">K</span>
-          </div>
-          <span className="font-semibold tracking-tight text-text-primary">KRAVOK</span>
-        </a>
-        <div className="hidden md:flex items-center gap-7 text-sm text-text-secondary">
-          <a href="#products" className="hover:text-text-primary transition-colors">Products</a>
-          <a href="#how" className="hover:text-text-primary transition-colors">How it works</a>
-          <a href="#download" className="hover:text-text-primary transition-colors">Download</a>
-        </div>
-        <MagneticButton href="#download" primary>
-          <Download className="w-4 h-4" /> Download
-        </MagneticButton>
-      </div>
-    </motion.nav>
+    </section>
   );
-};
+}
 
-/* ---------- Main app ---------- */
-export default function App() {
-  const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -80]);
-  const { primary, secondary, os } = usePlatformDownload();
-
-  const products = [
-    { icon: Mic, name: 'Oracle', tag: 'LIVE COACH', desc: 'Real-time AI copilot on every call. Tracks the checklist, extracts notes, detects personality, and grades the close.' },
-  ];
-
+function ProofLedger() {
   return (
-    <div className="relative min-h-screen bg-base text-text-body overflow-hidden noise">
-      <AuroraBackground />
-      <Particles />
-      <Navbar />
+    <section id="proof" aria-labelledby="proof-title" className="proof-section" data-reveal>
+      <div className="proof-intro">
+        <p className="eyebrow">Verified before release</p>
+        <h2 id="proof-title">Trust, built in.</h2>
+        <p>
+          We test access controls and verify the Mac app before it reaches your team.
+        </p>
+      </div>
 
-      {/* ===================== HERO ===================== */}
-      <section className="relative pt-44 pb-32 px-6">
-        <motion.div style={{ y: heroY }} className="relative max-w-6xl mx-auto">
-          <Reveal>
-            <div className="flex justify-center mb-6">
-              <div className="glass rounded-full pl-2 pr-4 py-1.5 flex items-center gap-2 text-xs">
-                <span className="bg-accent text-white px-2 py-0.5 rounded-full text-[10px] font-mono tracking-wider">NEW</span>
-                <span className="text-text-secondary">Oracle MVP now live on macOS</span>
-                <ArrowRight className="w-3 h-3 text-text-muted" />
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
-            <h1 className="text-center font-semibold tracking-[-0.03em] leading-[0.95] text-[clamp(3rem,8vw,7rem)]">
-              <span className="block text-text-primary">The AI copilot</span>
-              <span className="block">
-                that closes with <span className="shimmer-text">you.</span>
+      <dl className="proof-ledger">
+        {PUBLIC_PROOFS.map((proof) => (
+          <div key={proof.id} className="proof-row">
+            <dt>
+              <span className="proof-value">{proof.value}</span>
+              <span className="proof-label">{proof.label}</span>
+            </dt>
+            <dd>
+              <span>{proof.detail}</span>
+              <span className="proof-status">
+                <ShieldCheck aria-hidden="true" />
+                Checked {new Intl.DateTimeFormat('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                  timeZone: 'UTC',
+                }).format(new Date(`${proof.verifiedOn}T12:00:00Z`))}
               </span>
-            </h1>
-          </Reveal>
-
-          <Reveal delay={0.2}>
-            <p className="mt-7 text-center text-lg md:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
-              KRAVOK sits on every sales call. Coaches in real-time. Extracts the notes. Grades the close.
-              Built for teams who are done losing deals they should&apos;ve won.
-            </p>
-          </Reveal>
-
-          <Reveal delay={0.35}>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <MagneticButton href="#download" primary>
-                {os === 'windows' ? <Monitor className="w-4 h-4" /> : <Apple className="w-4 h-4" />} {primary.label}
-              </MagneticButton>
-              <MagneticButton href="#products">
-                See what&apos;s inside <ArrowRight className="w-4 h-4" />
-              </MagneticButton>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.5}>
-            <div className="mt-6 flex items-center justify-center gap-6 text-xs text-text-muted">
-              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> Universal (Intel + Apple Silicon)</div>
-              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> macOS 13+</div>
-              <div className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5 text-success" /> Free while in MVP</div>
-            </div>
-          </Reveal>
-
-          {/* floating live mock */}
-          <div className="mt-20 flex justify-center">
-            <motion.div
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              <LiveCallMock />
-            </motion.div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* ===================== PRODUCTS ===================== */}
-      <section id="products" className="relative py-32 px-6">
-        <div className="max-w-6xl mx-auto">
-          <Reveal>
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-xs text-text-secondary mb-5">
-                <Zap className="w-3 h-3 text-accent-hover" /> The Suite
-              </div>
-              <h2 className="text-4xl md:text-6xl font-semibold tracking-tight text-text-primary">
-                One tool. One mission.
-              </h2>
-              <p className="mt-4 text-text-secondary max-w-xl mx-auto">
-                Everything a sales team needs to close more and compound performance.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="max-w-md mx-auto">
-            {products.map((p, i) => <ProductCard key={p.name} {...p} i={i} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== HOW IT WORKS ===================== */}
-      <section id="how" className="relative py-32 px-6">
-        <div className="max-w-5xl mx-auto">
-          <Reveal>
-            <h2 className="text-center text-4xl md:text-6xl font-semibold tracking-tight text-text-primary mb-4">
-              How Oracle works
-            </h2>
-            <p className="text-center text-text-secondary max-w-xl mx-auto mb-16">
-              From the moment your rep hits dial, KRAVOK is listening, learning, and guiding.
-            </p>
-          </Reveal>
-
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-accent/40 to-transparent hidden md:block" />
-            {[
-              { icon: Radio, title: 'Capture', desc: 'Dual-audio capture (mic + system) via ScreenCaptureKit. Zero lag, zero setup.' },
-              { icon: Brain, title: 'Transcribe & Analyze', desc: 'Real-time transcription streams the conversation. AI detects stage, pain, and objections as they happen.' },
-              { icon: Sparkles, title: 'Coach', desc: 'Tips surface the instant the prospect pauses. Structured notes fill themselves in.' },
-              { icon: LineChart, title: 'Grade & Learn', desc: 'AI grades every call on 10 dimensions. Your reps improve with every dial.' },
-            ].map((step, i) => (
-              <Reveal key={step.title} delay={i * 0.1}>
-                <div className={`flex items-center gap-6 mb-8 ${i % 2 ? 'md:flex-row-reverse md:text-right' : ''}`}>
-                  <div className="glass rounded-2xl p-6 flex-1 max-w-md">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-9 h-9 rounded-lg glass-accent flex items-center justify-center">
-                        <step.icon className="w-4 h-4 text-accent-hover" />
-                      </div>
-                      <span className="text-xs font-mono text-text-muted">STEP 0{i + 1}</span>
+              <details className="proof-snapshot">
+                <summary>
+                  <span>{proof.snapshot.actionLabel}</span>
+                  <ChevronDown aria-hidden="true" />
+                </summary>
+                <div className="proof-snapshot-card">
+                  <header>
+                    <span>KRAVOK verification</span>
+                    <strong>{proof.snapshot.title}</strong>
+                  </header>
+                  <div className="proof-snapshot-result">
+                    <ShieldCheck aria-hidden="true" />
+                    <span>
+                      <small>Result</small>
+                      <strong>{proof.snapshot.result}</strong>
+                    </span>
+                  </div>
+                  <dl>
+                    <div>
+                      <dt>Scope</dt>
+                      <dd>{proof.snapshot.scope}</dd>
                     </div>
-                    <h3 className="text-xl font-semibold text-text-primary mb-1">{step.title}</h3>
-                    <p className="text-sm text-text-secondary">{step.desc}</p>
-                  </div>
-                  <div className="hidden md:block relative">
-                    <div className="w-4 h-4 rounded-full bg-accent shadow-glow relative z-10" />
-                    <div className="absolute inset-0 w-4 h-4 rounded-full bg-accent animate-ping" />
-                  </div>
-                  <div className="hidden md:block flex-1" />
+                    <div>
+                      <dt>Checked</dt>
+                      <dd>{new Intl.DateTimeFormat('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                        timeZone: 'UTC',
+                      }).format(new Date(`${proof.verifiedOn}T12:00:00Z`))}</dd>
+                    </div>
+                    <div>
+                      <dt>Record</dt>
+                      <dd>Internal release verification</dd>
+                    </div>
+                  </dl>
+                  <p>{proof.snapshot.note}</p>
                 </div>
-              </Reveal>
-            ))}
+              </details>
+            </dd>
           </div>
-        </div>
-      </section>
+        ))}
+      </dl>
+    </section>
+  );
+}
 
-      {/* ===================== DOWNLOAD CTA ===================== */}
-      <section id="download" className="relative py-32 px-6">
-        <div className="max-w-4xl mx-auto">
-          <Reveal>
-            <div className="relative conic-border rounded-3xl">
-              <div className="glass rounded-3xl p-10 md:p-16 text-center relative overflow-hidden">
-                <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-accent/20 blur-[100px]" />
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <div>
+        <span className="brand footer-brand">
+          <KravokLockup />
+        </span>
+        <p>Quiet when it should be. Useful when it matters.</p>
+      </div>
+      <nav aria-label="Legal and download links">
+        <Link to="/website-privacy">Website privacy notice</Link>
+        <Link to="/privacy-policy">Platform privacy policy</Link>
+        <Link to="/terms-of-service">Terms</Link>
+        <Link to="/user-agreement">User agreement</Link>
+        <Link to="/download">Already have an invite code?</Link>
+      </nav>
+      <p className="copyright">&copy; {new Date().getFullYear()} KRAVOK.</p>
+    </footer>
+  );
+}
 
-                <motion.div
-                  animate={{ scale: [1, 1.08, 1], rotate: [0, 6, -6, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl glass-accent mb-6"
-                >
-                  <Apple className="w-7 h-7 text-text-primary" />
-                </motion.div>
+export default function App() {
+  useScrollReveal();
 
-                <h2 className="relative text-4xl md:text-6xl font-semibold tracking-tight text-text-primary mb-4">
-                  Get KRAVOK for {os === 'windows' ? 'Windows' : 'macOS'}
-                </h2>
-                <p className="relative text-text-secondary max-w-lg mx-auto mb-10">
-                  One download. Oracle included. Free while we&apos;re in MVP.
-                  Sign in, start a call, and watch it work.
-                </p>
+  usePageMetadata({
+    title: 'KRAVOK — Know when to speak. Know when not to.',
+    description: 'Practice hard conversations, get live guidance when it matters, and see what to improve after the call.',
+  });
 
-                <div className="relative flex flex-col items-center gap-4">
-                  <MagneticButton href={primary.url} primary>
-                    <Download className="w-5 h-5" />
-                    {primary.label}
-                  </MagneticButton>
-                  <div className="text-xs text-text-muted font-mono">
-                    {primary.note}
-                  </div>
-                  <a href={secondary.url} className="text-xs text-text-muted hover:text-text-primary transition-colors underline underline-offset-4">Or download for {secondary.os === 'windows' ? 'Windows' : 'macOS'}</a>
+  return (
+    <div id="top" className="site-shell">
+      <a className="skip-link" href="#main-content">Skip to content</a>
+      <Header />
+
+      <main id="main-content">
+        <section aria-labelledby="hero-title" className="hero">
+          <div className="hero-copy">
+            <p className="eyebrow">One system for better sales calls</p>
+            <h1 id="hero-title">Know when to speak. Know when not to.</h1>
+            <p className="hero-lede">
+              Practice the call. Get help in the moment. See what to improve next.
+            </p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="#request-access">
+                Request access
+                <ArrowRight aria-hidden="true" />
+              </a>
+              <a className="button button-secondary" href="#system">
+                See how it works
+              </a>
+            </div>
+          </div>
+
+          <aside aria-label="KRAVOK operating principle" className="hero-stage">
+            <span className="hero-stage-axis hero-stage-axis--horizontal" aria-hidden="true" />
+            <span className="hero-stage-axis hero-stage-axis--vertical" aria-hidden="true" />
+            <span className="hero-signal-halo" aria-hidden="true" />
+            <div className="hero-decision-window">
+              <header className="hero-decision-header">
+                <OracleLockup className="oracle-lockup--principle" />
+                <span className="live-judgment"><span aria-hidden="true" />Live guidance</span>
+              </header>
+              <div className="hero-transcript">
+                <p>Prospect</p>
+                <blockquote>“Sure, I have got about twenty minutes before my next call.”</blockquote>
+              </div>
+              <div className="silence-proof">
+                <span aria-hidden="true" className="silence-indicator" />
+                <div>
+                  <strong>No help needed</strong>
+                  <span>Oracle stays quiet.</span>
                 </div>
               </div>
+              <div className="hero-next-signal">
+                <span>When Oracle steps in</span>
+                <span>A clear objection triggers guidance.</span>
+              </div>
             </div>
-          </Reveal>
-        </div>
-      </section>
+            <span className="hero-stage-caption">Help when it matters.</span>
+          </aside>
+        </section>
 
-      {/* ===================== FOOTER ===================== */}
-      <footer className="relative border-t border-white/5 py-10 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-text-muted">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center">
-              <span className="font-bold text-white text-xs">K</span>
-            </div>
-            <span>© {new Date().getFullYear()} KRAVOK. All rights reserved.</span>
-          </div>
-          <div className="flex items-center gap-5">
-            <a href="#products" className="hover:text-text-primary transition-colors">Products</a>
-            <a href="#how" className="hover:text-text-primary transition-colors">How it works</a>
-            <a href="#download" className="hover:text-text-primary transition-colors">Download</a>
-            <Link to="/terms-of-service" className="hover:text-text-primary transition-colors">Terms of Service</Link>
-            <Link to="/user-agreement" className="hover:text-text-primary transition-colors">User Agreement</Link>
-          </div>
-        </div>
-      </footer>
+        <SystemDemo />
+        <ProofLedger />
+        <RequestAccess />
+      </main>
+
+      <Footer />
     </div>
   );
 }

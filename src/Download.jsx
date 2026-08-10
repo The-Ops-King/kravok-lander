@@ -1,142 +1,142 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Download as DownloadIcon, Check } from 'lucide-react';
+import { ArrowLeft, Download as DownloadIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { usePlatformDownload } from './downloads';
+import {
+  DOWNLOADS,
+  detectOS,
+  getDownloadOptions,
+  getInitialSelection,
+  getInstallGuide,
+} from './downloads';
+import { usePageMetadata } from './usePageMetadata.js';
+import { KravokLockup } from './components/BrandIdentity.jsx';
 
-// The /releases/latest/ URL auto-rewrites to the newest tag, and asset names
-// are stable across releases — so the URLs never need touching. Only
-// VERSION_LABEL below is cosmetic; bump it when a release ships if you want the
-// displayed version to match.
-const VERSION_LABEL = 'v0.6.3';
-
-/**
- * Download — deep-link target that auto-starts the DMG download.
- *
- * Reached by clicking "Download" in invite / welcome emails. On mount we
- * assign window.location to the DMG URL, which browsers treat as a
- * file-download navigation (the tab stays on /download, the file streams
- * into the user's Downloads folder).
- *
- * If the auto-nav is blocked (Safari strict mode, popup blocker, offline),
- * the same URL is available as a click-target on the page.
- */
 export default function Download() {
-  const [started, setStarted] = useState(false);
-  const { primary } = usePlatformDownload();
+  usePageMetadata({
+    title: 'Download KRAVOK',
+    description: 'Already have an invite code? Download KRAVOK for macOS or Windows.',
+    robots: 'noindex,follow',
+  });
+
+  const [detectedOS, setDetectedOS] = useState(null);
+  const [selectedOS, setSelectedOS] = useState(null);
 
   useEffect(() => {
-    // Give the page a beat to paint, then kick the download for the visitor's OS.
-    const t = setTimeout(() => {
-      window.location.href = primary.url;
-      setStarted(true);
-    }, 400);
-    return () => clearTimeout(t);
-  }, [primary.url]);
+    const platform = detectOS();
+    setDetectedOS(platform);
+    setSelectedOS(getInitialSelection(platform));
+  }, []);
+
+  const options = getDownloadOptions(detectedOS);
+  const selected = selectedOS ? DOWNLOADS[selectedOS] : null;
+  const guide = getInstallGuide(selectedOS);
+  const isUnsupported = detectedOS === 'unsupported' && !selected;
 
   return (
     <div className="relative min-h-screen bg-base text-text-body overflow-hidden">
-      {/* subtle ambient accent glow to match the landing hero */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[600px] w-[900px] rounded-full opacity-30 blur-3xl"
-        style={{ background: 'radial-gradient(circle, var(--accent, #FF4444) 0%, transparent 70%)' }}
-      />
-
-      {/* Navbar */}
+      <a className="skip-link" href="#download-content">Skip to content</a>
       <nav className="fixed top-4 left-0 right-0 mx-auto z-50 w-[min(92%,980px)]">
-        <div className="glass rounded-2xl px-5 py-3 flex items-center justify-between">
+        <div className="rounded-xl border border-border-default bg-primary px-5 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-accent-hover flex items-center justify-center shadow-glow">
-              <span className="font-bold text-white text-sm">K</span>
-            </div>
-            <span className="font-semibold tracking-tight text-text-primary">KRAVOK</span>
+            <KravokLockup />
           </Link>
           <Link
             to="/"
             className="flex items-center gap-2 text-sm text-text-secondary hover:text-text-primary transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" /> Back to kravok.ai
+            <ArrowLeft aria-hidden="true" className="w-4 h-4" />
+            <span className="hidden sm:inline">Back to kravok.ai</span>
+            <span className="sm:hidden">Back</span>
           </Link>
         </div>
       </nav>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+      <main
+        id="download-content"
         className="relative max-w-xl mx-auto px-6 pt-40 pb-20 flex flex-col items-center text-center"
       >
-        {/* Status icon */}
         <div className="mb-8 flex items-center justify-center">
-          <div
-            className={`w-16 h-16 rounded-full flex items-center justify-center border ${
-              started
-                ? 'bg-accent/15 border-accent/40 text-accent'
-                : 'bg-white/5 border-white/10 text-text-secondary'
-            } transition-colors`}
-          >
-            {started ? (
-              <Check className="w-7 h-7" strokeWidth={2.5} />
-            ) : (
-              <DownloadIcon className="w-7 h-7" />
-            )}
+          <div className="w-16 h-16 rounded-xl flex items-center justify-center border border-border-default bg-primary text-text-secondary">
+            <DownloadIcon aria-hidden="true" className="w-7 h-7" />
           </div>
         </div>
 
-        {/* Headline */}
+        <p className="mb-3 text-xs font-mono font-extrabold uppercase tracking-[0.18em] text-text-primary">
+          Invite code required
+        </p>
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-text-primary mb-3">
-          {started ? 'Your download has started.' : 'Getting KRAVOK ready…'}
+          {isUnsupported ? 'Continue on a Mac or Windows PC.' : 'Choose your download.'}
         </h1>
-        <p className="text-base text-text-secondary mb-10 max-w-md">
-          If it didn't start automatically, use the button below.
+        <p className="text-base text-text-secondary mb-8 max-w-md">
+          {isUnsupported
+            ? "KRAVOK isn't available for this device. Choose the computer you'll use, then open this page there."
+            : 'Already have an invite code? Select your computer below.'}
         </p>
 
-        {/* Manual trigger */}
-        <a
-          href={primary.url}
-          className="group relative inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl font-medium text-sm tracking-wide text-white overflow-hidden"
-        >
-          <span className="absolute inset-0 bg-gradient-to-r from-accent via-accent-hover to-accent bg-[length:200%_100%] animate-gradient-shift" />
-          <span className="absolute inset-0 rounded-xl opacity-60 blur-md bg-accent/50 group-hover:opacity-80 transition-opacity" />
-          <span className="relative flex items-center gap-2.5">
-            <DownloadIcon className="w-5 h-5" />
-            {primary.label}
-          </span>
-        </a>
+        <div className="grid grid-cols-2 gap-3 w-full max-w-md" role="group" aria-label="Choose your computer">
+          {options.map((option) => {
+            const active = selectedOS === option.os;
+            const name = option.os === 'mac' ? 'macOS' : 'Windows';
 
-        {/* Meta */}
-        <div className="mt-6 flex flex-col items-center gap-1 text-xs text-text-muted font-mono">
-          <div>{VERSION_LABEL} · {primary.filename}</div>
-          <div>{primary.note}</div>
+            return (
+              <button
+                key={option.os}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setSelectedOS(option.os)}
+                className={`rounded-lg border px-4 py-3 text-sm font-medium transition-colors ${
+                  active
+                    ? 'border-accent bg-accent-subtle text-text-primary'
+                    : 'border-border-default bg-primary text-text-secondary hover:border-border-hover hover:text-text-primary'
+                }`}
+              >
+                {name}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Install steps */}
-        <div className="mt-16 w-full glass rounded-2xl p-6 text-left">
-          <h2 className="text-sm font-semibold tracking-wide uppercase text-text-primary/80 mb-4">
-            After download
-          </h2>
-          <ol className="space-y-3 text-sm text-text-body">
-            <li className="flex gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-text-secondary">1</span>
-              <span>Open <span className="font-mono text-text-primary">{primary.filename}</span> from your Downloads folder.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-text-secondary">2</span>
-              <span>Drag <strong className="text-text-primary">KRAVOK</strong> into the <strong className="text-text-primary">Applications</strong> folder.</span>
-            </li>
-            <li className="flex gap-3">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-mono text-text-secondary">3</span>
-              <span>Launch KRAVOK from Applications and sign in with your invited email.</span>
-            </li>
-          </ol>
-        </div>
+        {selected && (
+          <>
+            <a
+              href={selected.url}
+              className="mt-6 inline-flex items-center gap-2.5 px-7 py-3.5 rounded-lg bg-accent hover:bg-accent-hover font-bold text-sm tracking-wide text-[#F5F5F5] transition-colors"
+            >
+              <DownloadIcon aria-hidden="true" className="w-5 h-5" />
+              {selected.label}
+            </a>
 
-        {/* Trust line */}
-        <p className="mt-8 text-xs text-text-muted max-w-md">
-          Signed with an Apple Developer ID and notarized by Apple — no Gatekeeper warnings.
-        </p>
-      </motion.div>
+            <div className="mt-6 flex flex-col items-center gap-1 text-xs text-text-muted font-mono">
+              <div>Release file / {selected.filename}</div>
+              <div>{selected.note}</div>
+            </div>
+          </>
+        )}
+
+        {guide && (
+          <div className="mt-16 w-full rounded-xl border border-border-default bg-primary p-6 text-left">
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-text-primary/80 mb-4">
+              {guide.heading}
+            </h2>
+            <ol className="space-y-3 text-sm text-text-body">
+              {guide.steps.map((step, index) => (
+                <li key={step} className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-lg border border-border-default bg-elevated flex items-center justify-center text-xs font-mono text-text-secondary">
+                    {index + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+        {guide?.trust && (
+          <p className="mt-8 text-xs text-text-muted max-w-md">
+            {guide.trust}
+          </p>
+        )}
+      </main>
     </div>
   );
 }
