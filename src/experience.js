@@ -134,7 +134,7 @@ export const PUBLIC_PROOFS = [
     detail: 'Counted from non-practice calls with prospect transcript evidence in the last seven days.',
     verifiedOn: '2026-08-10',
     status: 'verified',
-    receiptUrl: null,
+    receiptUrl: 'https://github.com/The-Ops-King/kravok-lander/blob/db04a47288881ae519f6a1afa29dd035e5c98888/evidence/proofs/2026-08-10-public-claims.md',
     snapshot: {
       actionLabel: 'View activity verification',
       title: 'Live call activity',
