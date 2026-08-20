@@ -1,6 +1,16 @@
-// The public download and its release evidence intentionally move together.
-export const RELEASE_TAG = 'v0.6.4';
-const BASE = `https://github.com/The-Ops-King/kravok-lander/releases/download/${RELEASE_TAG}`;
+// ALWAYS the current release, never a pinned tag.
+//
+// This was pinned to v0.6.4 and silently went stale through the whole 0.7.x
+// line, so the public download handed every new visitor a build from before the
+// updater was fixed -- 0.6.4 is specifically the version that records an update
+// and then relaunches itself unchanged, forever. The one page whose job is to
+// onboard a stranger was shipping the one build that cannot get itself out of
+// trouble.
+//
+// GitHub's /releases/latest/download/ redirects to the newest published asset,
+// which is the same source the in-app updater already reads. Nothing to bump on
+// release day, so nothing to forget.
+const BASE = 'https://github.com/The-Ops-King/kravok-lander/releases/latest/download';
 
 export const DOWNLOADS = {
   mac: {
