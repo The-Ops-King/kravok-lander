@@ -71,11 +71,11 @@ test('macOS instructions describe installation without an unverified architectur
   assert.doesNotMatch(downloads.DOWNLOADS.mac.note, /Apple Silicon|Intel|Universal/i);
   assert.equal(
     downloads.DOWNLOADS.mac.url,
-    'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.6.4/Kravok-mac-universal.dmg',
+    'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-universal.dmg',
   );
   assert.equal(
     downloads.DOWNLOADS.windows.url,
-    'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.6.4/Kravok-windows-x64-setup.exe',
+    'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-windows-x64-setup.exe',
   );
 });
 
