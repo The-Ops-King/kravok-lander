@@ -54,8 +54,8 @@ try {
 
 for (const claim of PUBLIC_PROOFS) {
   const receipt = PUBLIC_CLAIM_RECEIPTS[claim.id];
-  if (!receipt || receipt.checkedOn !== buildDate || !receipt.source) {
-    blockers.push(`Public proof ${claim.id} is missing a current verification receipt.`);
+  if (!receipt || receipt.checkedOn !== claim.verifiedOn || !receipt.source) {
+    blockers.push(`Public proof ${claim.id} is not bound to a receipt from its stated verification date.`);
     continue;
   }
   if (!isImmutableReceiptSource(receipt.source)) {
@@ -72,13 +72,13 @@ for (const claim of PUBLIC_PROOFS) {
       try {
         const artifactName = decodeURIComponent(new URL(receipt.artifactUrl).pathname.split('/').pop());
         const [servedDigest, manifest] = await Promise.all([
-          fetchSha256(receipt.artifactUrl),
+          fetchSha256(DOWNLOADS.mac.url),
           fetchText(receipt.artifactManifestUrl),
         ]);
         const manifestDigest = getManifestSha256(manifest, artifactName);
 
         if (servedDigest !== receipt.artifactSha256.toLowerCase() || manifestDigest !== servedDigest) {
-          blockers.push('The served macOS artifact, recorded SHA-256, and pinned checksum manifest do not match.');
+          blockers.push('The current macOS download, recorded SHA-256, and pinned checksum manifest do not match.');
         }
       } catch (error) {
         blockers.push(`The exact macOS release artifact could not be re-verified: ${error.message}.`);

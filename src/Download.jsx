@@ -121,7 +121,7 @@ export default function Download() {
             <ol className="space-y-3 text-sm text-text-body">
               {guide.steps.map((step, index) => (
                 <li key={step} className="flex gap-3">
-                  <span className="shrink-0 w-6 h-6 rounded-lg border border-border-default bg-elevated flex items-center justify-center text-xs font-mono text-text-secondary">
+                  <span className="shrink-0 w-6 h-6 rounded-lg border border-border-default bg-elevated flex items-center justify-center text-xs leading-none font-mono text-text-secondary">
                     {index + 1}
                   </span>
                   <span>{step}</span>

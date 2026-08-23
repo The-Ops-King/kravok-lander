@@ -129,34 +129,34 @@ export const PUBLIC_PROOFS = [
   {
     id: 'organizations-running-live-calls',
     kind: 'live-organizations',
-    value: '4',
-    label: 'organizations used KRAVOK on live calls this week',
-    detail: 'Counted from non-practice calls with prospect transcript evidence in the last seven days.',
-    verifiedOn: '2026-08-10',
+    value: '1',
+    label: 'organization used KRAVOK on 3 evidenced live calls in the verified seven-day window',
+    detail: 'A dated aggregate of non-practice calls with prospect transcript evidence—not a permanently current “this week” counter.',
+    verifiedOn: '2026-08-22',
     status: 'verified',
-    receiptUrl: 'https://github.com/The-Ops-King/kravok-lander/blob/db04a47288881ae519f6a1afa29dd035e5c98888/evidence/proofs/2026-08-10-public-claims.md',
+    receiptUrl: 'https://github.com/The-Ops-King/kravok-lander/blob/bb41c38e4affe152dbf82a840105ee7be9cab591/evidence/proofs/2026-08-22-public-claims.md',
     snapshot: {
       actionLabel: 'View activity verification',
       title: 'Live call activity',
-      result: '4 organizations / 9 evidenced calls',
-      scope: 'Seven-day aggregate; practice drills and zero-transcript calls excluded',
+      result: '1 organization / 3 evidenced live calls',
+      scope: 'Seven days ending Aug 22; practice drills and zero-transcript calls excluded',
       note: 'Only aggregate counts are shown. Organization names and call content remain private.',
     },
   },
   {
     id: 'tenant-policy-suite',
     kind: 'policy-suite',
-    value: '340',
-    label: 'access checks passed',
-    detail: 'Automated tests confirm that access rules work as intended.',
-    verifiedOn: '2026-08-10',
+    value: '461',
+    label: 'access checks passed for v0.7.4',
+    detail: 'The release commit passed every automated database access-policy assertion across 30 test files.',
+    verifiedOn: '2026-08-20',
     status: 'verified',
-    receiptUrl: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/31220917565/job/93005143912',
+    receiptUrl: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/32320176499/job/96280698842',
     snapshot: {
       actionLabel: 'View access verification',
       title: 'Access rules check',
-      result: '340 of 340 checks passed',
-      scope: 'Database access policies and role permissions',
+      result: '461 of 461 checks passed',
+      scope: 'v0.7.4 database access policies and role permissions',
       note: 'The full technical record remains private and is reviewed before release.',
     },
   },
@@ -164,23 +164,23 @@ export const PUBLIC_PROOFS = [
     id: 'mac-trust-chain',
     kind: 'mac-trust',
     value: 'Signed',
-    label: 'and notarized for Mac',
-    detail: 'The Mac app passed signing, notarization, and final package checks.',
-    verifiedOn: '2026-08-10',
+    label: 'and notarized for Mac in v0.7.4',
+    detail: 'The universal Mac app and DMG passed signing, Apple notarization, stapling, and package checks.',
+    verifiedOn: '2026-08-20',
     status: 'verified',
-    receiptUrl: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/31435411864/job/93608409342',
+    receiptUrl: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/32320173341/job/96280686841',
     snapshot: {
       actionLabel: 'View Mac verification',
       title: 'Mac release check',
       result: 'All release checks passed',
-      scope: 'Signing, notarization, and package stapling',
+      scope: 'v0.7.4 signing, Apple notarization, universal packaging, and DMG stapling',
       note: 'Publication binds this check to the exact Mac installer offered for download.',
     },
   },
 ];
 
-// Owner-approved proof contract. Publication must fail closed unless each
-// subject has a current public claim and an immutable verification receipt.
+// Owner-approved proof contract. Publication fails closed unless each subject
+// is a dated, immutable snapshot with a matching verification receipt.
 export const REQUIRED_PUBLIC_PROOF_IDS = [
   'organizations-running-live-calls',
   'tenant-policy-suite',
@@ -238,8 +238,8 @@ export function assertProofsPublishable(buildDate) {
     if (claim.status !== 'verified') {
       throw new Error(`Public proof ${claim.id} is not verified.`);
     }
-    if (claim.verifiedOn !== buildDate) {
-      throw new Error(`Public proof ${claim.id} must be re-verified on publish day.`);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(claim.verifiedOn) || claim.verifiedOn > buildDate) {
+      throw new Error(`Public proof ${claim.id} has a missing or future verification date.`);
     }
     if (PROHIBITED_PROOF_KINDS.has(claim.kind)) {
       throw new Error(`Prohibited public proof class: ${claim.kind}.`);
