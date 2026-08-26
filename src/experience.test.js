@@ -79,8 +79,8 @@ test('Request-access handoff sends no applicant data through the page URL', () =
   assert.ok(!href.includes('email='));
 });
 
-test('Public proof publishes only the three claims verified for this release', () => {
-  assert.ok(PUBLIC_PROOFS.every((claim) => claim.verifiedOn === '2026-08-10'));
+test('Public proof publishes immutable dated snapshots without pretending every claim was checked today', () => {
+  assert.ok(PUBLIC_PROOFS.every((claim) => /^2026-08-(20|22)$/.test(claim.verifiedOn)));
   assert.ok(PUBLIC_PROOFS.every((claim) => !['cue-latency', 'windows-signing', 'price'].includes(claim.kind)));
   assert.ok(PUBLIC_PROOFS.every((claim) => claim.snapshot?.title));
   assert.ok(PUBLIC_PROOFS.every((claim) => claim.snapshot?.result));
@@ -91,6 +91,6 @@ test('Public proof publishes only the three claims verified for this release', (
     'mac-trust-chain',
   ]);
   assert.deepEqual(PUBLIC_PROOFS.map(({ id }) => id), REQUIRED_PUBLIC_PROOF_IDS);
-  assert.doesNotThrow(() => assertProofsPublishable('2026-08-10'));
-  assert.throws(() => assertProofsPublishable('2026-08-11'), /re-verified/i);
+  assert.doesNotThrow(() => assertProofsPublishable('2026-08-22'));
+  assert.throws(() => assertProofsPublishable('2026-08-19'), /future/i);
 });

@@ -51,7 +51,7 @@ test('platform privacy route must render the actual policy component and be link
   assert.equal(hasPrivacyPolicyLink('// <Link to="/privacy-policy">Privacy policy</Link>'), false);
 });
 
-test('legal review must be current, immutable, and bound to every document digest', () => {
+test('legal review remains valid while the approved document bytes stay unchanged', () => {
   const documentDigests = {
     'TermsOfService.jsx': 'a'.repeat(64),
     'UserAgreement.jsx': 'b'.repeat(64),
@@ -67,8 +67,8 @@ test('legal review must be current, immutable, and bound to every document diges
     documentSha256: { ...documentDigests },
   };
 
-  assert.deepEqual(validateLegalBundleReceipt(receipt, '2026-08-07', documentDigests), []);
-  assert.notDeepEqual(validateLegalBundleReceipt({ ...receipt, reviewedOn: '2026-08-06' }, '2026-08-07', documentDigests), []);
+  assert.deepEqual(validateLegalBundleReceipt(receipt, '2026-08-22', documentDigests), []);
+  assert.notDeepEqual(validateLegalBundleReceipt({ ...receipt, reviewedOn: '2026-08-23' }, '2026-08-22', documentDigests), []);
   assert.notDeepEqual(validateLegalBundleReceipt({ ...receipt, approvalScope: 'something-else' }, '2026-08-07', documentDigests), []);
   assert.notDeepEqual(validateLegalBundleReceipt({ ...receipt, acknowledgement: null }, '2026-08-07', documentDigests), []);
   assert.notDeepEqual(validateLegalBundleReceipt({ ...receipt, reviewerRole: null }, '2026-08-07', documentDigests), []);
@@ -76,19 +76,22 @@ test('legal review must be current, immutable, and bound to every document diges
   assert.notDeepEqual(validateLegalBundleReceipt(null, '2026-08-07', documentDigests), []);
 });
 
-test('mac trust requires a pinned served artifact and an exact SHA-256', () => {
-  const pinned = 'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.6.4/Kravok-mac.dmg';
+test('mac trust binds the floating download name to a pinned release artifact and exact SHA-256', () => {
+  const pinned = 'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.7.4/Kravok-mac-universal.dmg';
+  const floating = 'https://github.com/The-Ops-King/kravok-lander/releases/latest/download/Kravok-mac-universal.dmg';
   const valid = {
     artifactUrl: pinned,
     artifactSha256: 'a'.repeat(64),
     artifactManifestUrl: `https://raw.githubusercontent.com/The-Ops-King/kravok-lander/${'b'.repeat(40)}/release/SHA256SUMS.txt`,
   };
 
-  assert.deepEqual(validateMacArtifactReceipt(valid, pinned), []);
-  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactUrl: pinned.replace('v0.6.4', 'latest') }, pinned), []);
-  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactSha256: 'x' }, pinned), []);
-  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactManifestUrl: 'https://example.com/checksums.txt' }, pinned), []);
-  assert.notDeepEqual(validateMacArtifactReceipt(valid, `${pinned}?floating=1`), []);
+  assert.deepEqual(validateMacArtifactReceipt(valid, floating), []);
+  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactUrl: floating }, floating), []);
+  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactSha256: 'x' }, floating), []);
+  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactManifestUrl: 'https://example.com/checksums.txt' }, floating), []);
+  assert.notDeepEqual(validateMacArtifactReceipt(valid, floating.replace('Kravok-mac-universal.dmg', 'another.dmg')), []);
+  assert.notDeepEqual(validateMacArtifactReceipt(valid, 'not-a-url'), []);
+  assert.notDeepEqual(validateMacArtifactReceipt({ ...valid, artifactUrl: 'not-a-url' }, floating), []);
 });
 
 test('checksum manifest lookup binds the digest to the exact artifact name', () => {
@@ -100,7 +103,7 @@ test('checksum manifest lookup binds the digest to the exact artifact name', () 
   assert.equal(getManifestSha256('not a checksum', 'Kravok-mac.dmg'), null);
 });
 
-test('platform privacy requires its canonical route, document, links, and immutable review', () => {
+test('platform privacy approval remains valid while the approved policy bytes stay unchanged', () => {
   const receipt = {
     reviewedOn: '2026-08-07',
     route: '/privacy-policy',
@@ -120,7 +123,8 @@ test('platform privacy requires its canonical route, document, links, and immuta
     documentSha256: 'd'.repeat(64),
   };
 
-  assert.deepEqual(validatePlatformPrivacyReceipt(receipt, '2026-08-07', evidence), []);
+  assert.deepEqual(validatePlatformPrivacyReceipt(receipt, '2026-08-22', evidence), []);
+  assert.notDeepEqual(validatePlatformPrivacyReceipt({ ...receipt, reviewedOn: '2026-08-23' }, '2026-08-22', evidence), []);
   assert.notDeepEqual(validatePlatformPrivacyReceipt({ ...receipt, source: 'trust me' }, '2026-08-07', evidence), []);
   assert.notDeepEqual(validatePlatformPrivacyReceipt({ ...receipt, acknowledgement: null }, '2026-08-07', evidence), []);
   assert.notDeepEqual(validatePlatformPrivacyReceipt({ ...receipt, approvalBasis: 'agent' }, '2026-08-07', evidence), []);

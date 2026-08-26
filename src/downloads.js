@@ -36,6 +36,7 @@ const INSTALL_GUIDES = {
       'Open the KRAVOK .dmg file from your Downloads folder.',
       'Drag KRAVOK into the Applications folder.',
       'Launch KRAVOK from Applications and sign in with your invited email.',
+      'Allow Microphone access, then enable Kravok under System Settings → Privacy & Security → Screen & System Audio Recording and relaunch the app.',
     ],
     trust: null,
   },

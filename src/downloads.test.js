@@ -66,6 +66,8 @@ test('macOS instructions describe installation without an unverified architectur
 
   assert.match(copy, /KRAVOK \.dmg file/);
   assert.match(copy, /Applications/);
+  assert.match(copy, /Microphone/);
+  assert.match(copy, /Screen & System Audio Recording/);
   assert.doesNotMatch(copy, /Apple Silicon|Intel|Universal \(|current verified|Developer ID|notar|stapl/i);
   assert.doesNotMatch(downloads.DOWNLOADS.mac.filename, /Universal|Apple Silicon|Intel/i);
   assert.doesNotMatch(downloads.DOWNLOADS.mac.note, /Apple Silicon|Intel|Universal/i);

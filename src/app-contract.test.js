@@ -82,8 +82,10 @@ test('forbidden and unverified marketing claims stay off the public page', () =>
   assert.match(html, /View Mac verification/);
   assert.match(html, /Internal release verification/);
   assert.doesNotMatch(html, /href="https:\/\/github\.com\/The-Ops-King\/KRAVOK\/actions\/runs\//);
-  assert.match(html, /340/);
+  assert.match(html, /461/);
   assert.match(html, /access checks passed/);
+  assert.match(html, /1 organization/);
+  assert.match(html, /3 evidenced live calls/);
   assert.match(html, /Signed/);
   assert.match(html, /Already have an invite code\?/);
   assert.doesNotMatch(html, /Synthetic demonstration|Synthetic walkthrough|RLS|CI run|Org layer|control plane|Correct restraint/i);

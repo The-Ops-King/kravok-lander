@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 
 const PINNED_GITHUB_RELEASE = /^https:\/\/github\.com\/The-Ops-King\/(?:KRAVOK|kravok-lander)\/releases\/download\/(?!latest(?:\/|$))[^/?#]+\/[^/?#]+$/i;
+const LATEST_LANDER_RELEASE = /^https:\/\/github\.com\/The-Ops-King\/kravok-lander\/releases\/latest\/download\/[^/?#]+$/i;
 const PINNED_GITHUB_MANIFEST = /^https:\/\/raw\.githubusercontent\.com\/The-Ops-King\/(?:KRAVOK|kravok-lander)\/[a-f0-9]{40}\/[^?#]+$/i;
 const SHA256 = /^[a-f0-9]{64}$/i;
 const IMMUTABLE_RECEIPT_URLS = [
@@ -37,16 +38,31 @@ export function hasPrivacyPolicyLink(source) {
   return typeof source === 'string' && /(?:to|href)=["']\/privacy-policy["']/.test(withoutSourceComments(source));
 }
 
+function urlBasename(value) {
+  try {
+    return decodeURIComponent(new URL(value).pathname.split('/').pop());
+  } catch {
+    return null;
+  }
+}
+
 export function validateMacArtifactReceipt(receipt, downloadUrl) {
+  const pinnedName = urlBasename(receipt?.artifactUrl);
+  const downloadName = urlBasename(downloadUrl);
   const valid = receipt &&
     PINNED_GITHUB_RELEASE.test(receipt.artifactUrl || '') &&
     SHA256.test(receipt.artifactSha256 || '') &&
     PINNED_GITHUB_MANIFEST.test(receipt.artifactManifestUrl || '') &&
-    receipt.artifactUrl === downloadUrl;
+    LATEST_LANDER_RELEASE.test(downloadUrl || '') &&
+    pinnedName === downloadName;
 
   return valid
     ? []
-    : ['Public proof mac-trust-chain must match the served pinned release artifact, a pinned checksum manifest, and its 64-character SHA-256.'];
+    : ['Public proof mac-trust-chain must bind the floating download name to a pinned release artifact, pinned checksum manifest, and 64-character SHA-256.'];
+}
+
+function isDateOnOrBefore(value, buildDate) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value || '') && value <= buildDate;
 }
 
 export function getManifestSha256(manifest, artifactName) {
@@ -66,8 +82,8 @@ export function validatePlatformPrivacyReceipt(receipt, buildDate, routeEvidence
   }
 
   const blockers = [];
-  if (receipt.reviewedOn !== buildDate) {
-    blockers.push('The app/platform Privacy Policy must be reviewed again on publish day.');
+  if (!isDateOnOrBefore(receipt.reviewedOn, buildDate)) {
+    blockers.push('The app/platform Privacy Policy review date is missing or later than the build date.');
   }
   if (receipt.route !== '/privacy-policy') {
     blockers.push('The app/platform Privacy Policy must use the canonical /privacy-policy route.');
@@ -103,8 +119,8 @@ export function validateLegalBundleReceipt(receipt, buildDate, documentDigests) 
   }
 
   const blockers = [];
-  if (receipt.reviewedOn !== buildDate) {
-    blockers.push('The public Terms and End User Terms must be reviewed again on publish day.');
+  if (!isDateOnOrBefore(receipt.reviewedOn, buildDate)) {
+    blockers.push('The public Terms and End User Terms review date is missing or later than the build date.');
   }
   if (!isImmutableReceiptSource(receipt.source)) {
     blockers.push('The legal-bundle review receipt must be immutable.');

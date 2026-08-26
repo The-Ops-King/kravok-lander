@@ -1,18 +1,18 @@
 export const PUBLIC_CLAIM_RECEIPTS = {
   'organizations-running-live-calls': {
-    checkedOn: '2026-08-10',
-    source: 'https://github.com/The-Ops-King/kravok-lander/blob/db04a47288881ae519f6a1afa29dd035e5c98888/evidence/proofs/2026-08-10-public-claims.md',
+    checkedOn: '2026-08-22',
+    source: 'https://github.com/The-Ops-King/kravok-lander/blob/bb41c38e4affe152dbf82a840105ee7be9cab591/evidence/proofs/2026-08-22-public-claims.md',
   },
   'tenant-policy-suite': {
-    checkedOn: '2026-08-10',
-    source: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/31220917565/job/93005143912',
+    checkedOn: '2026-08-20',
+    source: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/32320176499/job/96280698842',
   },
   'mac-trust-chain': {
-    checkedOn: '2026-08-10',
-    source: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/31435411864/job/93608409342',
-    artifactUrl: 'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.6.4/Kravok-mac-universal.dmg',
-    artifactSha256: 'e7c245a3fbe00f7c7e7680b7d8e0fde198874b22f64e0620786cb5212667c5e0',
-    artifactManifestUrl: 'https://raw.githubusercontent.com/The-Ops-King/kravok-lander/db04a47288881ae519f6a1afa29dd035e5c98888/evidence/releases/v0.6.4.sha256',
+    checkedOn: '2026-08-20',
+    source: 'https://github.com/The-Ops-King/KRAVOK/actions/runs/32320173341/job/96280686841',
+    artifactUrl: 'https://github.com/The-Ops-King/kravok-lander/releases/download/v0.7.4/Kravok-mac-universal.dmg',
+    artifactSha256: '73c84861715c96438c4907efec87b6504d20ba4e452a6bd9bba0f40a1c6f6dcf',
+    artifactManifestUrl: 'https://raw.githubusercontent.com/The-Ops-King/kravok-lander/bb41c38e4affe152dbf82a840105ee7be9cab591/evidence/releases/v0.7.4.sha256',
   },
 };
 
